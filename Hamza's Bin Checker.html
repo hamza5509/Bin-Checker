@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hamza's Bin Checker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: linear-gradient(135deg, #e9efff, #f7f9ff);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+      color: #1a1a1a;
+    }
+    .app {
+      background: #ffffff;
+      padding: 2rem;
+      border-radius: 1.5rem;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 420px;
+    }
+    .app h1 {
+      font-size: 1.8rem;
+      color: #1e40af;
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+    .app .datetime {
+      font-size: 0.85rem;
+      color: #6b7280;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    .card {
+      background: #f1f5f9;
+      border-radius: 1rem;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .card span.label {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #111;
+    }
+    .card span.data {
+      font-size: 1.15rem;
+      font-weight: 500;
+    }
+    .card span.data .icon {
+      margin-right: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h1>Hamza's Bin Checker</h1>
+    <div class="datetime" id="datetime"></div>
+
+    <div class="card">
+      <span class="label">Last week's collection</span>
+      <span class="data" id="last-week"></span>
+    </div>
+
+    <div class="card" style="background: #dbeafe; transform: scale(1.05); border: 2px solid #1e40af;">
+      <span class="label">Bins to put out next</span>
+      <span class="data" id="current-week"></span>
+    </div>
+
+    <div class="card">
+      <span class="label">Next week's collection</span>
+      <span class="data" id="next-week"></span>
+    </div>
+  </div>
+
+  <script>
+    const schedule = {
+      "2025-06-02": "C,GW",
+      "2025-06-09": "P",
+      "2025-06-16": "C,GW",
+      "2025-06-23": "P",
+      "2025-06-30": "C,GW",
+      "2025-07-07": "P",
+      "2025-07-14": "C,GW",
+      "2025-07-21": "P",
+      "2025-07-28": "C,GW",
+      "2025-08-04": "P",
+      "2025-08-11": "C,GW",
+      "2025-08-18": "P",
+      "2025-08-25": "C,GW",
+      "2025-09-01": "P",
+      "2025-09-08": "C,GW",
+      "2025-09-15": "P",
+      "2025-09-22": "C,GW",
+      "2025-09-29": "P",
+      "2025-10-06": "C,GW",
+      "2025-10-13": "P",
+      "2025-10-20": "C,GW",
+      "2025-10-27": "P",
+      "2025-11-03": "C,GW",
+      "2025-11-10": "P",
+      "2025-11-17": "C,GW",
+      "2025-11-24": "P"
+    };
+
+    const now = new Date();
+    const day = now.getDay();
+    const hours = now.getHours();
+
+    const currentMonday = new Date(now);
+    currentMonday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
+
+    const nextMonday = new Date(currentMonday);
+    nextMonday.setDate(currentMonday.getDate() + 7);
+
+    const lastMonday = new Date(currentMonday);
+    lastMonday.setDate(currentMonday.getDate() - 7);
+
+    let displayMonday = new Date(currentMonday);
+    if (day > 1 || (day === 1 && hours >= 24)) {
+      displayMonday = nextMonday;
+    }
+
+    const dateToStr = d => d.toISOString().split('T')[0];
+    const dateUK = d => d.toLocaleDateString('en-GB');
+
+    const formatBins = binStr => binStr?.split(',').map(b => {
+      const map = { GW: '🖤 General Waste', C: '💙 Cardboard', P: '💚 Plastic' };
+      return map[b] || b;
+    }).join(' + ');
+
+    document.getElementById("datetime").textContent = `Today is ${now.toLocaleString('en-GB')}`;
+    document.getElementById("last-week").textContent = `Last Monday — ${formatBins(schedule[dateToStr(lastMonday)]) || 'N/A'}`;
+    document.getElementById("current-week").textContent = `This Monday — ${formatBins(schedule[dateToStr(displayMonday)]) || 'N/A'}`;
+    document.getElementById("next-week").textContent = `Next Monday — ${formatBins(schedule[dateToStr(nextMonday)]) || 'N/A'}`;
+  </script>
+</body>
+</html>
